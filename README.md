@@ -16,10 +16,10 @@ Sem Supabase configurado, a tela de acesso indica que falta configurar o serviç
 ## Supabase: banco e Storage
 
 1. Crie um projeto Supabase e copie URL e chave pública para `.env.local`.
-2. No SQL Editor do Supabase, execute o conteúdo de `supabase/migrations/202609260001_initial_schema.sql` (ou aplique com Supabase CLI via `supabase db push`).
+2. Para executar pelo SQL Editor, cole o conteúdo de `supabase/migrations/202609260001_initial_schema.sql`. Para usar a CLI, execute `supabase login`, `supabase link --project-ref <project-ref>` e depois `supabase db push`.
 3. A migration cria as tabelas, índices, trigger de perfil, integridade entre entidades, regras de conclusão, RLS em todas as tabelas e o bucket privado `visionboard-private`.
 4. O bucket limita os arquivos a 10 MB e aceita JPEG, PNG e WebP. As políticas exigem que a primeira pasta do caminho seja o UUID do usuário autenticado. Caminhos de metas são `{user_id}/goals/{goal_id}/{arquivo}`.
-5. Confirme em Authentication → Policies/Storage que bucket permanece privado; não crie políticas públicas.
+5. Confirme em Storage que o bucket permanece privado; não crie políticas públicas.
 
 RLS usa `auth.uid()` e chaves estrangeiras compostas para impedir associar uma meta/frase/imagem de outra conta, inclusive em operações diretas na API. Mantenha migrations versionadas. Para confirmar isolamento com dois usuários, use dois logins e tente ler, alterar e excluir os IDs cruzados pela API autenticada: as linhas de terceiros não devem ser retornadas ou modificadas. A verificação automatizada contra dois usuários ainda precisa de um projeto de teste Supabase.
 
@@ -34,9 +34,9 @@ RLS usa `auth.uid()` e chaves estrangeiras compostas para impedir associar uma m
 
 ## Netlify
 
-1. Importe `nalifazarte/visionboard` como site. O `netlify.toml` define `pnpm build`, publicação de `dist` e fallback da aplicação. O `netlify.toml` fornece o fallback de rotas SPA.
+1. Importe `nalifazarte/visionboard` como site. O `netlify.toml` define `pnpm build`, publicação de `dist` e fallback da aplicação.
 2. Em Site configuration → Environment variables, cadastre `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` para os contextos de produção e deploy preview. São credenciais públicas com RLS como fronteira de segurança; nenhuma chave privada de serviço deve estar no build.
-3. Atualize as URLs Site URL/Redirect URLs no Supabase e a lista de domínios JavaScript/origens na credencial Google Cloud.
+3. Atualize as URLs Site URL/Redirect URLs no Supabase. Em “Origens JavaScript autorizadas” no Google, cadastre `http://localhost:5173` e o domínio do Netlify; adicione previews apenas se for usá-los.
 4. Deploy automático é feito a cada push para a branch principal.
 
 ## Estrutura
@@ -56,5 +56,7 @@ A biblioteca pública de imagens, wallpapers gerados por IA e edição/ordenaç�
 ## Validação
 
 `npm test` cobre regras de progresso, conclusão, atraso, trimestre e upload com o test runner nativo do Node.js. `npm run build` valida tipos e empacotamento. Um build local não valida credenciais, URLs de OAuth ou políticas em uma instância Supabase; complete a verificação com as contas de teste antes do uso real.
+
+
 
 
