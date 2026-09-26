@@ -2,6 +2,18 @@
 
 Aplicação pessoal de visionboard, em português brasileiro, feita com React, TypeScript, Vite, Supabase e preparada como PWA para desktop e celular. Os dados e imagens são privados por padrão. Pexels e geração por IA não fazem parte desta primeira fase.
 
+## Como usar (sem precisar entender de tecnologia)
+
+Depois que o app estiver publicado e conectado aos serviços uma única vez, o uso do dia a dia é simples:
+
+1. Abra o link do app no computador ou no celular.
+2. Entre com sua conta Google.
+3. Crie seu mural e adicione metas, prazos, imagens e frases. As alterações ficam salvas na nuvem automaticamente.
+4. No outro aparelho, abra o mesmo link e entre com a mesma conta Google para encontrar seus dados.
+5. Se quiser, use “Adicionar à tela inicial” no celular ou “Instalar” no navegador do computador para abrir o app como um aplicativo.
+
+Seus murais e imagens são privados: cada pessoa só acessa o que pertence à própria conta. A configuração inicial da nuvem, do Google e da publicação precisa ser feita pela pessoa que administra o projeto; depois disso, quem usa o app não precisa configurar nada. **Este repositório ainda precisa receber as credenciais e URLs reais do Supabase, Google e Netlify para que a sincronização na nuvem fique ativa.**
+
 ## Rodar localmente
 
 1. Instale Node.js 22.6 ou superior.
@@ -11,7 +23,7 @@ Aplicação pessoal de visionboard, em português brasileiro, feita com React, T
 5. Execute `npm run dev` e abra o endereço mostrado no terminal.
 6. Para gerar a versão de produção, execute `npm run build`; a saída fica em `dist/`.
 
-Sem Supabase configurado, a tela de acesso indica que falta configurar o serviço e não cria dados fictícios.
+Sem Supabase configurado, o app informa que ainda está sendo preparado e não cria dados fictícios.
 
 ## Supabase: banco e Storage
 
