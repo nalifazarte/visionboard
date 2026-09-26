@@ -51,11 +51,12 @@ RLS usa `auth.uid()` e chaves estrangeiras compostas para impedir associar uma m
 
 Login Google, rotas de conteúdo atrás da sessão, dashboard, mural anual/trimestres, CRUD de metas e frases, upload de imagens, progresso/status/prazo, escolha de capa no upload, ordenação manual por arrastar, tema claro/escuro pelo sistema e manifesto instalável. Os signed URLs de capa expiram após uma hora e são recriados ao carregar o mural.
 
-A biblioteca pública de imagens, wallpapers gerados por IA e edição/ordenação de imagens já salvas foram deixados para a próxima fase. Wallpapers têm apenas o schema preparado (`generation_mode` aceita `collage` ou `artistic`), sem geração ativa.
+Pexels e wallpapers gerados por IA ficam para a próxima fase. As imagens próprias já podem ser enviadas, escolhidas como capa, ordenadas e removidas. Wallpapers têm apenas o schema preparado (`generation_mode` aceita `collage` ou `artistic`), sem geração ativa.
 
 ## Validação
 
 `npm test` cobre regras de progresso, conclusão, atraso, trimestre e upload com o test runner nativo do Node.js. `npm run build` valida tipos e empacotamento. Um build local não valida credenciais, URLs de OAuth ou políticas em uma instância Supabase; complete a verificação com as contas de teste antes do uso real.
+
 
 
 

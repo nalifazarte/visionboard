@@ -1,6 +1,6 @@
 export type GoalStatus='not_started'|'in_progress'|'completed'|'paused'
 export type Goal={id:string;title:string;description:string|null;quarter:number|null;due_date:string|null;status:GoalStatus;progress:number;created_at:string;coverUrl?:string|null}
-export type Quote={id:string;text:string;author:string|null;is_favorite:boolean;include_in_wallpaper:boolean}
+export type Quote={id:string;text:string;author:string|null;is_favorite:boolean;include_in_wallpaper:boolean;goal_id?:string|null;quarter?:number|null}
 export const statusLabels:Record<GoalStatus,string>={not_started:'Ainda não comecei',in_progress:'Em andamento',completed:'Concluída',paused:'Em pausa'}
 export function isOverdue(goal:Pick<Goal,'due_date'|'status'>,today=new Date().toISOString().slice(0,10)){return Boolean(goal.due_date&&goal.due_date<today&&goal.status!=='completed')}
 export function normalizeProgress(progress:number){if(!Number.isFinite(progress))throw new Error('O progresso precisa ser um número.');if(progress<0||progress>100)throw new Error('O progresso deve ficar entre 0 e 100.');return Math.round(progress)}
