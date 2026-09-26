@@ -7,7 +7,7 @@ Aplicação pessoal de visionboard, em português brasileiro, feita com React, T
 1. Instale Node.js 22.6 ou superior.
 2. Copie `.env.example` para `.env.local`.
 3. Preencha `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` com os valores públicos do seu projeto Supabase. Nunca coloque `service_role` no navegador.
-4. Instale dependências com `npm install`.
+4. Instale dependências com `pnpm install` (ou `corepack pnpm install`).
 5. Execute `npm run dev` e abra o endereço mostrado no terminal.
 6. Para gerar a versão de produção, execute `npm run build`; a saída fica em `dist/`.
 
@@ -34,7 +34,7 @@ RLS usa `auth.uid()` e chaves estrangeiras compostas para impedir associar uma m
 
 ## Netlify
 
-1. Importe `nalifazarte/visionboard` como site, selecione Vite e diretório de publicação `dist`. O `netlify.toml` fornece o fallback de rotas SPA.
+1. Importe `nalifazarte/visionboard` como site. O `netlify.toml` define `pnpm build`, publicação de `dist` e fallback da aplicação. O `netlify.toml` fornece o fallback de rotas SPA.
 2. Em Site configuration → Environment variables, cadastre `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` para os contextos de produção e deploy preview. São credenciais públicas com RLS como fronteira de segurança; nenhuma chave privada de serviço deve estar no build.
 3. Atualize as URLs Site URL/Redirect URLs no Supabase e a lista de domínios JavaScript/origens na credencial Google Cloud.
 4. Deploy automático é feito a cada push para a branch principal.
@@ -56,4 +56,5 @@ A biblioteca pública de imagens, wallpapers gerados por IA e edição/ordenaç�
 ## Validação
 
 `npm test` cobre regras de progresso, conclusão, atraso, trimestre e upload com o test runner nativo do Node.js. `npm run build` valida tipos e empacotamento. Um build local não valida credenciais, URLs de OAuth ou políticas em uma instância Supabase; complete a verificação com as contas de teste antes do uso real.
+
 
