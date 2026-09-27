@@ -1,75 +1,86 @@
 # Meu Visionboard
 
-Aplicação pessoal de visionboard, em português brasileiro, feita com React, TypeScript, Vite, Supabase e preparada como PWA para desktop e celular. Os dados e imagens são privados por padrão. Pexels e geração por IA não fazem parte desta primeira fase.
+Aplicação pessoal de visionboard em português brasileiro, feita com React, TypeScript, Vite e Supabase. O site será publicado pelo GitHub Pages e os dados e imagens ficam no Supabase, privados por usuário.
 
-## Como usar (sem precisar entender de tecnologia)
+## Como usar
 
-Depois que o app estiver publicado e conectado aos serviços uma única vez, o uso do dia a dia é simples:
+Depois da configuração inicial abaixo, basta abrir [https://nalifazarte.github.io/visionboard/](https://nalifazarte.github.io/visionboard/) e entrar com Google. O mesmo endereço funciona no computador e celular; entre com a mesma conta Google para ver seus dados. No celular, use “Adicionar à tela inicial” para instalar o PWA.
 
-1. Abra o link do app no computador ou no celular.
-2. Entre com sua conta Google.
-3. Crie seu mural e adicione metas, prazos, imagens e frases. As alterações ficam salvas na nuvem automaticamente.
-4. No outro aparelho, abra o mesmo link e entre com a mesma conta Google para encontrar seus dados.
-5. Se quiser, use “Adicionar à tela inicial” no celular ou “Instalar” no navegador do computador para abrir o app como um aplicativo.
+## Configuração inicial — passo a passo
 
-Seus murais e imagens são privados: cada pessoa só acessa o que pertence à própria conta. A configuração inicial da nuvem, do Google e da publicação precisa ser feita pela pessoa que administra o projeto; depois disso, quem usa o app não precisa configurar nada. **Este repositório ainda precisa receber as credenciais e URLs reais do Supabase, Google e Netlify para que a sincronização na nuvem fique ativa.**
+### 1. Criar e preparar o Supabase
 
-## Rodar localmente
+1. Crie uma conta em [supabase.com](https://supabase.com/) e escolha **New project**. Guarde a senha do banco em local seguro.
+2. Aguarde o projeto ficar pronto. No painel do Supabase, abra **SQL Editor** e escolha **New query**.
+3. Abra a migration [`supabase/migrations/202609260001_initial_schema.sql`](supabase/migrations/202609260001_initial_schema.sql) neste repositório, copie todo o conteúdo e cole no editor SQL. Clique **Run** e confira se terminou sem erros.
+4. No painel, abra **Project Settings → API** e copie o **Project URL** e a chave pública **anon** (ou **publishable**, conforme o painel mostrar). Você vai cadastrá-las no GitHub no passo 4.
 
-1. Instale Node.js 22.6 ou superior.
-2. Copie `.env.example` para `.env.local`.
-3. Preencha `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` com os valores públicos do seu projeto Supabase. Nunca coloque `service_role` no navegador.
-4. Instale dependências com `pnpm install` (ou `corepack pnpm install`).
-5. Execute `npm run dev` e abra o endereço mostrado no terminal.
-6. Para gerar a versão de produção, execute `npm run build`; a saída fica em `dist/`.
+A migration cria as tabelas, ativa Row Level Security (RLS), cria regras para cada usuário acessar apenas seus registros e cria o bucket privado `visionboard-private` para imagens. Não torne esse bucket público. Não use nem compartilhe a chave `service_role`/secret.
 
-Sem Supabase configurado, o app informa que ainda está sendo preparado e não cria dados fictícios.
+### 2. Configurar o login pelo Google
 
-## Supabase: banco e Storage
+1. Abra o [Google Cloud Console](https://console.cloud.google.com/) e crie ou selecione um projeto.
+2. Abra **Google Auth Platform** e configure as informações/apresentação do app. Se o app ficar em modo de teste, adicione seu próprio endereço Gmail como usuário de teste.
+3. Em **Clients**, crie um cliente OAuth do tipo **Web application**.
+4. Em **Authorized JavaScript origins**, adicione exatamente:
+   - `https://nalifazarte.github.io`
+   - `http://localhost:5173` (somente para testes locais)
+5. Deixe a página aberta. No Supabase, abra **Authentication → Providers → Google** e habilite Google. Copie o **Client ID** e o **Client Secret** do Google para os campos do Supabase.
+6. Na página do provedor Google do Supabase, copie o callback que aparece. Ele tem este formato: `https://SEU-PROJECT-REF.supabase.co/auth/v1/callback`.
+7. Volte ao Google Cloud Console e adicione esse endereço em **Authorized redirect URIs**. É o endereço do Supabase, não o do GitHub Pages. Salve.
 
-1. Crie um projeto Supabase e copie URL e chave pública para `.env.local`.
-2. Para executar pelo SQL Editor, cole o conteúdo de `supabase/migrations/202609260001_initial_schema.sql`. Para usar a CLI, execute `supabase login`, `supabase link --project-ref <project-ref>` e depois `supabase db push`.
-3. A migration cria as tabelas, índices, trigger de perfil, integridade entre entidades, regras de conclusão, RLS em todas as tabelas e o bucket privado `visionboard-private`.
-4. O bucket limita os arquivos a 10 MB e aceita JPEG, PNG e WebP. As políticas exigem que a primeira pasta do caminho seja o UUID do usuário autenticado. Caminhos de metas são `{user_id}/goals/{goal_id}/{arquivo}`.
-5. Confirme em Storage que o bucket permanece privado; não crie políticas públicas.
+### 3. Cadastrar os endereços de retorno no Supabase
 
-RLS usa `auth.uid()` e chaves estrangeiras compostas para impedir associar uma meta/frase/imagem de outra conta, inclusive em operações diretas na API. Mantenha migrations versionadas. Para confirmar isolamento com dois usuários, use dois logins e tente ler, alterar e excluir os IDs cruzados pela API autenticada: as linhas de terceiros não devem ser retornadas ou modificadas. A verificação automatizada contra dois usuários ainda precisa de um projeto de teste Supabase.
+No Supabase, abra **Authentication → URL Configuration** e configure:
 
-## Google OAuth
+- **Site URL**: `https://nalifazarte.github.io/visionboard/`
+- **Redirect URLs**: adicione `https://nalifazarte.github.io/visionboard/`
+- Para testar localmente, adicione também `http://localhost:5173/`
 
-1. No Google Cloud Console, configure a tela de consentimento OAuth e crie uma credencial OAuth 2.0 do tipo Aplicativo da Web.
-2. Em Supabase → Authentication → Providers → Google, habilite Google e informe Client ID e Client Secret do Google (estes segredos ficam apenas no Supabase).
-3. Copie a URI de callback exibida pelo Supabase, no formato `https://<project-ref>.supabase.co/auth/v1/callback`, para “URIs de redirecionamento autorizados” da credencial no Google.
-4. Em Supabase → Authentication → URL Configuration, cadastre como Site URL seu endereço de produção Netlify, por exemplo `https://seu-app.netlify.app`.
-5. Adicione `http://localhost:5173` e a URL de produção em Redirect URLs do Supabase. Para preview, adicione a URL específica `https://<deploy-preview>--<site>.netlify.app` ou use um padrão de preview restrito.
-6. O app retorna para a origem atual após OAuth; não use curingas amplos em produção.
+Salve. O app retorna para o endereço atual do mural depois do login; a URL precisa estar autorizada aqui. Não adicione curingas amplos. [Documentação sobre URLs de retorno](https://supabase.com/docs/guides/auth/redirect-urls)
 
-## Netlify
+### 4. Cadastrar a conexão segura no GitHub
 
-1. Importe `nalifazarte/visionboard` como site. O `netlify.toml` define `pnpm build`, publicação de `dist` e fallback da aplicação.
-2. Em Site configuration → Environment variables, cadastre `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` para os contextos de produção e deploy preview. São credenciais públicas com RLS como fronteira de segurança; nenhuma chave privada de serviço deve estar no build.
-3. Atualize as URLs Site URL/Redirect URLs no Supabase. Em “Origens JavaScript autorizadas” no Google, cadastre `http://localhost:5173` e o domínio do Netlify; adicione previews apenas se for usá-los.
-4. Deploy automático é feito a cada push para a branch principal.
+1. Abra o repositório [nalifazarte/visionboard](https://github.com/nalifazarte/visionboard).
+2. Vá a **Settings → Secrets and variables → Actions → Variables**.
+3. Clique **New repository variable** e cadastre estas duas variáveis com os valores copiados do Supabase:
+   - Nome `VITE_SUPABASE_URL` → valor do **Project URL**.
+   - Nome `VITE_SUPABASE_ANON_KEY` → valor da chave pública **anon** ou **publishable**.
+4. Cadastre-as como **Variables** do repositório. São valores públicos de frontend; não cadastre uma `service_role`/secret key. Nunca coloque segredos privados em nomes `VITE_` ou no código.
 
-## Estrutura
+### 5. Ativar e publicar o GitHub Pages
 
-- `src/App.tsx`: telas, navegação responsiva, autenticação, operações das metas/frases e upload.
-- `src/lib/domain.ts`: regras puras para prazo, progresso, status, trimestre e validação de imagem.
-- `src/lib/supabase.ts`: cliente Supabase usando apenas variáveis públicas.
-- `supabase/migrations/`: schema, integridade, RLS, bucket e políticas.
-- `public/`: ícone e favicon do PWA.
+1. No repositório, abra **Settings → Pages**.
+2. Em **Build and deployment → Source**, escolha **GitHub Actions**.
+3. Abra a aba **Actions**. O workflow **Publicar no GitHub Pages** compila o app e publica os arquivos. Se a primeira execução tiver ocorrido antes de ativar Pages, abra o workflow e clique **Run workflow** depois de ativá-lo.
+4. Aguarde a execução ficar verde. Abra [https://nalifazarte.github.io/visionboard/](https://nalifazarte.github.io/visionboard/).
+5. Faça login com Google, crie uma meta e envie uma imagem para confirmar que banco e Storage estão ligados. Depois abra o mesmo site em outro dispositivo e entre com a mesma conta.
 
-## O que está implementado nesta base
+A cada atualização publicada na branch `main`, o GitHub Actions recompila e publica o app. O arquivo [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) define esse processo.
 
-Login Google, rotas de conteúdo atrás da sessão, dashboard, mural anual/trimestres, CRUD de metas e frases, upload de imagens, progresso/status/prazo, escolha de capa no upload, ordenação manual por arrastar, tema claro/escuro pelo sistema e manifesto instalável. Os signed URLs de capa expiram após uma hora e são recriados ao carregar o mural.
+## Privacidade e chaves
 
-Pexels e wallpapers gerados por IA ficam para a próxima fase. As imagens próprias já podem ser enviadas, escolhidas como capa, ordenadas e removidas. Wallpapers têm apenas o schema preparado (`generation_mode` aceita `collage` ou `artistic`), sem geração ativa.
+O endereço do site e o código frontend podem ser vistos por quem abrir a página. Os dados pessoais continuam privados pelo Supabase: as políticas RLS controlam o acesso às tabelas e as políticas do Storage restringem arquivos à pasta do usuário autenticado. Isso não é criptografia ponta a ponta: o Supabase hospeda o banco e as imagens.
+
+`VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` são valores públicos que acabam disponíveis no navegador. A segurança depende de RLS e das políticas do bucket, já incluídas na migration. **Nunca** use a chave `service_role`/secret no frontend, em variáveis `VITE_`, no GitHub Pages ou no repositório.
+
+## Teste local opcional
+
+1. Copie `.env.example` para `.env.local`.
+2. Preencha `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` com os valores públicos do Supabase. Deixe `VITE_BASE_PATH=/`.
+3. Instale Node.js 22.6+, depois execute `pnpm install` e `pnpm dev`. Abra `http://localhost:5173/`.
+4. No Google Cloud Console e no Supabase, mantenha também os endereços locais descritos acima enquanto estiver desenvolvendo.
+
+## O que está incluído
+
+- `src/App.tsx`: interface responsiva, login, metas, frases e uploads.
+- `src/lib/domain.ts`: regras para status, progresso, prazo e imagens.
+- `src/lib/supabase.ts`: cliente Supabase com valores públicos.
+- `supabase/migrations/`: banco, RLS e Storage privado.
+- `.github/workflows/deploy.yml`: compilação e publicação automática no GitHub Pages.
+
+O mural anual, trimestres, metas, prazos, frases e uploads estão implementados. O PWA instala como app no celular e no computador. Pexels e geração de wallpapers por IA não fazem parte desta fase.
 
 ## Validação
 
-`npm test` cobre regras de progresso, conclusão, atraso, trimestre e upload com o test runner nativo do Node.js. `npm run build` valida tipos e empacotamento. Um build local não valida credenciais, URLs de OAuth ou políticas em uma instância Supabase; complete a verificação com as contas de teste antes do uso real.
-
-
-
-
-
+`pnpm test` executa os testes de regras e verificações do schema/políticas. `pnpm build` compila o aplicativo. O teste local não verifica credenciais reais, configuração OAuth nem isolamento em um projeto Supabase; faça o teste com sua conta após a configuração.
