@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => {
       react(),
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['favicon.svg'],
+        includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
         manifest: {
           name: 'Meu Visionboard',
           short_name: 'Visionboard',
@@ -22,7 +22,11 @@ export default defineConfig(({ mode }) => {
           display: 'standalone',
           start_url: base,
           scope: base,
-          icons: [{ src: `${base}icon.svg`, sizes: 'any', type: 'image/svg+xml', purpose: 'any maskable' }],
+          icons: [
+            { src: `${base}pwa-192.png`, sizes: '192x192', type: 'image/png' },
+            { src: `${base}pwa-512.png`, sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
+            { src: `${base}icon.svg`, sizes: 'any', type: 'image/svg+xml', purpose: 'any maskable' },
+          ],
         },
       }),
     ],
