@@ -101,14 +101,14 @@ export default function App(){
      if(selectedQuotes[0].author){ctx.font=(mobile?18:22)+'px Arial';ctx.fillText('— '+selectedQuotes[0].author,width/2,boxY+boxH-12)}
     }
    }else{
-    const mobile=device==='mobile',headline=selectedQuotes[0]?.text??'A vida que estou construindo',handwritten='"Segoe Print", "Bradley Hand", "Comic Sans MS", cursive';
+    const mobile=device==='mobile',headline=selectedQuotes[0]?.text??'A vida que estou construindo',handwritten='"Satisfy"';
     ctx.fillStyle=palette.quote;ctx.textAlign='center';ctx.font='500 '+(mobile?64:76)+'px Georgia, serif';ctx.fillText('MEMO',width/2,height*.19);
     ctx.fillRect(width*.07,height*.235,width*.86,3);
-    let fontSize=mobile?58:68;await document.fonts.load('italic '+fontSize+'px '+handwritten);ctx.font='italic '+fontSize+'px '+handwritten;
+    let fontSize=mobile?58:68;await document.fonts.load(fontSize+'px '+handwritten);ctx.font=fontSize+'px '+handwritten;
     let lines=wrapCanvasText(ctx,headline,width*.74);
-    while(lines.length>(mobile?7:4)&&fontSize>34){fontSize-=4;ctx.font='italic '+fontSize+'px '+handwritten;lines=wrapCanvasText(ctx,headline,width*.74)}
+    while(lines.length>(mobile?7:4)&&fontSize>34){fontSize-=4;ctx.font=fontSize+'px '+handwritten;lines=wrapCanvasText(ctx,headline,width*.74)}
     if(lines.length>(mobile?8:5))throw new Error('A frase é longa demais para o layout de pôster. Escolha uma frase menor para mantê-la inteira no wallpaper.')
-    const lineHeight=fontSize*1.17,posterCenterY=height*.4625,startY=posterCenterY-((lines.length-1)*lineHeight)/2+fontSize*.35;
+    const lineHeight=fontSize*1.17,posterCenterY=height*.4625,metrics=ctx.measureText(headline),ascent=metrics.actualBoundingBoxAscent||fontSize,descent=metrics.actualBoundingBoxDescent||fontSize*.25,startY=posterCenterY+(ascent-descent-(lines.length-1)*lineHeight)/2;
     lines.forEach((line,i)=>ctx.fillText(line,width/2,startY+i*lineHeight));
     ctx.fillRect(width*.07,height*.69,width*.86,3);
     const thumbs=Math.min(entries.length,device==='mobile'?3:5),thumbW=width*.78/thumbs,gap=width*.02,startX=(width-(thumbW*thumbs+gap*(thumbs-1)))/2;
