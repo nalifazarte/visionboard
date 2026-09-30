@@ -1,5 +1,21 @@
 export type GoalStatus='not_started'|'in_progress'|'completed'|'paused'
-export type Goal={id:string;title:string;description:string|null;quarter:number|null;due_date:string|null;status:GoalStatus;progress:number;created_at:string;coverUrl?:string|null;coverPhotographer?:string|null;coverPhotographerUrl?:string|null;coverSourceUrl?:string|null}
+export const goalTags=[
+ {id:'pessoal',label:'Pessoal'},
+ {id:'profissional',label:'Profissional'},
+ {id:'saude',label:'Saúde'},
+ {id:'relacionamentos',label:'Relacionamentos'},
+ {id:'financas',label:'Finanças'},
+ {id:'estudos',label:'Estudos'},
+ {id:'hobbies',label:'Hobbies'},
+ {id:'familia',label:'Família e casa'},
+ {id:'espiritualidade',label:'Espiritualidade'},
+ {id:'viagens',label:'Viagens'},
+ {id:'autocuidado',label:'Autocuidado'},
+ {id:'criatividade',label:'Criatividade'},
+ {id:'comunidade',label:'Comunidade e contribuição'},
+] as const
+export type GoalTag=typeof goalTags[number]['id']
+export type Goal={id:string;title:string;description:string|null;quarter:number|null;due_date:string|null;status:GoalStatus;progress:number;created_at:string;tags:GoalTag[];coverUrl?:string|null}
 export type Quote={id:string;text:string;author:string|null;is_favorite:boolean;include_in_wallpaper:boolean;goal_id?:string|null;quarter?:number|null}
 export const statusLabels:Record<GoalStatus,string>={not_started:'Ainda não comecei',in_progress:'Em andamento',completed:'Concluída',paused:'Em pausa'}
 export function isOverdue(goal:Pick<Goal,'due_date'|'status'>,today=new Date().toISOString().slice(0,10)){return Boolean(goal.due_date&&goal.due_date<today&&goal.status!=='completed')}
@@ -7,3 +23,4 @@ export function normalizeProgress(progress:number){if(!Number.isFinite(progress)
 export function goalUpdate(status:GoalStatus,progress:number,wasCompleted:boolean){const safeProgress=normalizeProgress(progress);return{status,progress:status==='completed'?100:safeProgress,completed_at:status==='completed'?new Date().toISOString():wasCompleted?null:undefined}}
 export function quarterLabel(quarter:number|null){return quarter===null?'Ano inteiro':`${quarter}º trimestre`}
 export function validateImage(file:File){if(!['image/jpeg','image/png','image/webp'].includes(file.type))throw new Error('Envie uma imagem JPEG, PNG ou WebP.');if(file.size>10*1024*1024)throw new Error('Cada imagem pode ter no máximo 10 MB.')}
+
