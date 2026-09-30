@@ -12,3 +12,9 @@ major_version = 15
 [studio]
 enabled = true
 port = 54323
+
+[functions.pexels]
+verify_jwt = true
+
+[functions.delete-account]
+verify_jwt = true

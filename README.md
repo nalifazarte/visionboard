@@ -27,11 +27,11 @@ O PWA funciona em computador e celular. IA para geração de wallpapers não est
 
 Essas duas funções são opcionais e precisam ser publicadas no Supabase. Não é necessário configurar isso para abrir o app, entrar ou usar imagens próprias.
 
-1. No painel Supabase, abra **SQL Editor → New query** e execute o arquivo `supabase/migrations/202609280001_pexels_images.sql` deste repositório.
-2. Instale a [CLI do Supabase](https://supabase.com/docs/guides/cli), entre (`supabase login`) e vincule este projeto (`supabase link --project-ref SEU_PROJECT_REF`). O project ref aparece no endereço do projeto no painel.
-3. No terminal, na pasta do projeto, publique a exclusão segura com `supabase functions deploy delete-account`. O servidor Supabase fornece as chaves privadas necessárias; não as copie para o site ou GitHub.
-4. Para buscar imagens, gere uma chave na [API do Pexels](https://www.pexels.com/api/) e cadastre como segredo: `supabase secrets set PEXELS_API_KEY=sua_chave`.
-5. Publique a busca/importação Pexels com `supabase functions deploy pexels`.
+1. No painel Supabase, abra **SQL Editor → New query**. No GitHub, abra `supabase/migrations/202609280001_pexels_images.sql`, clique em **Raw**, copie o conteúdo SQL (que começa com `alter table`) e cole no editor. Não cole o nome/caminho do arquivo. Clique **Run**. Essa migration só acrescenta colunas e um índice; ela não apaga metas, frases nem imagens.
+2. Se o projeto ainda não está no seu computador: no GitHub, clique em **Code → Download ZIP**, extraia o arquivo e abra a pasta extraída no Explorador. Ela deve conter `package.json` e a pasta `supabase`. Instale Node.js 20 ou superior se ainda não tiver. Dentro dessa pasta, abra o terminal (clique com o botão direito e escolha **Abrir no Terminal**) e rode `npx supabase login`. Na primeira vez, se aparecer uma pergunta para baixar o Supabase CLI, digite `y` e aperte Enter; depois autorize no navegador. Esse login permite que o computador publique funções no seu projeto. O arquivo `supabase/config.toml` já está pronto. Agora rode `npx supabase link --project-ref SEU_PROJECT_REF`. O ref é o trecho antes de `.supabase.co` no Project URL (ex.: `https://abc123.supabase.co` → `abc123`). Esse comando só conecta a pasta local ao seu projeto. Se pedir a senha do banco, use a senha definida quando criou o projeto.
+3. Ainda no PowerShell e dentro da mesma pasta, publique a exclusão segura com `npx supabase functions deploy delete-account`. O servidor Supabase fornece as chaves privadas necessárias; não as copie para o site ou GitHub.
+4. Para buscar imagens, gere uma chave na [API do Pexels](https://www.pexels.com/api/) e cadastre como segredo: `npx supabase secrets set PEXELS_API_KEY="SUA_CHAVE"`.
+5. Publique a busca/importação Pexels com `npx supabase functions deploy pexels`.
 
 O app valida o login antes das operações. As imagens escolhidas no Pexels são copiadas para o bucket privado do usuário e mantêm créditos do fotógrafo. A chave Pexels fica apenas no servidor. A API do Pinterest não foi conectada.
 
